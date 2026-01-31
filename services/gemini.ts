@@ -40,7 +40,14 @@ export class GeminiService {
     const ai = this.getAI();
 
     // Construct a prompt that includes the dialogue and instructions for the character to speak.
-    const prompt = `Cinematic video starting from this frame. The character in the image is speaking the following dialogue: "${dialogue}". Ensure the character's mouth movements and facial expressions match the speech. High quality, smooth animation, professional lighting.`;
+    const prompt = `Cinematic video starting from this frame. The character in the image is speaking the following dialogue: "${dialogue}".
+    STRICT AUDIO INSTRUCTION: The video must contain ONLY the character's voice speaking the dialogue.
+    - NO background music.
+    - NO ambient sounds.
+    - NO sound effects.
+    - SILENCE except for the speech.
+    
+    Ensure the character's mouth movements and facial expressions match the speech perfectly. High quality, smooth animation, professional lighting.`;
 
     let operation = await ai.models.generateVideos({
       model: model,
