@@ -24,7 +24,7 @@ export class GeminiService {
       } catch (error: any) {
         lastError = error;
         const isRetryable = error.status === 429 || (error.status >= 500 && error.status <= 599) || error.message?.includes('fetch');
-        
+
         if (isRetryable && i < maxRetries - 1) {
           const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
           await new Promise(resolve => setTimeout(resolve, delay));
@@ -38,10 +38,10 @@ export class GeminiService {
 
   static async generateVideo(base64Image: string, mimeType: string, model: string, aspectRatio: string, dialogue: string) {
     const ai = this.getAI();
-    
+
     // Construct a prompt that includes the dialogue and instructions for the character to speak.
     const prompt = `Cinematic video starting from this frame. The character in the image is speaking the following dialogue: "${dialogue}". Ensure the character's mouth movements and facial expressions match the speech. High quality, smooth animation, professional lighting.`;
-    
+
     let operation = await ai.models.generateVideos({
       model: model,
       prompt: prompt,
@@ -69,9 +69,35 @@ export class GeminiService {
   static async generateMascotPrompts(script: string, sceneCount: number, referenceImages: ReferenceImage[] = []) {
     return this.withRetry(async () => {
       const ai = this.getAI();
-      const systemInstruction = `Atue como um especialista em criação de mascotes animados para IA de imagem. Sua tarefa é criar exatamente ${sceneCount} prompts visuais para cenas de um roteiro.`;
+      const systemInstruction = `Atue como um especialista em criação de mascotes animados para IA de imagem. Sua tarefa é criar exatamente ${sceneCount} prompts visuais para cenas de um roteiro.
+
+Whenever generating images, always feature an adorably cute animated mascot character as the main subject of the composition.
+
+The character must be rendered in high-quality 3D Pixar-inspired style, with extra-rounded, soft proportions, smooth pastel-friendly materials, subtle subsurface scattering, and gentle cinematic lighting that enhances warmth and cuteness.
+
+The character should follow “baby-schema” proportions:
+• Very large, round, glossy eyes (slightly oversized relative to the face)
+• Soft, rounded cheeks (optionally with a light blush)
+• Small nose, simplified facial features
+• A clearly defined but cute, expressive mouth capable of sweet smiles, curious “ooh” expressions, excited grins, or playful surprise.
+
+Eye expressions must be highly emotive and charming, with visible highlights, soft reflections, and subtle eyelid shapes that enhance innocence, friendliness, and approachability.
+
+Facial expressions, body posture, and gestures must feel lively, playful, and emotionally readable, automatically inferred from the prompt’s intent (friendly, curious, excited, proud, thoughtful, etc.).
+
+When the character has arms, hands must always be visible, small and rounded, posed in cute, communicative gestures such as waving, pointing, presenting, holding props, reacting, or excitedly explaining.
+
+The character should maintain a warm, lovable, and reassuring presence, like a friendly explainer mascot or animated guide designed to instantly win affection and trust.
+
+The background must be generated dynamically to match the prompt’s context (office, classroom, technology, space, nature, etc.), but remain soft, slightly simplified, and visually supportive, never overpowering the character.
+
+Use a harmonious color palette with gentle contrasts, soft gradients, and shallow depth of field to keep the mascot as the clear focal point.
+
+When appropriate, include cute, stylized props or icons (screens, charts, symbols, tools) integrated naturally into the 3D scene, scaled and styled to match the character’s adorable proportions.
+
+The final image must prioritize cuteness, clarity, warmth, and instant emotional connection, delivering charming, high-quality Pixar-style 3D explainer imagery that feels joyful, friendly, and irresistibly adorable.`;
       const parts: any[] = [{ text: script }];
-      
+
       referenceImages.forEach(img => {
         parts.push({
           inlineData: {
@@ -106,7 +132,7 @@ export class GeminiService {
           }
         }
       });
-      
+
       const data = JSON.parse(response.text || '{}');
       return data.scenes as Array<{ description: string; imagePrompt: string }>;
     });
@@ -116,7 +142,7 @@ export class GeminiService {
     return this.withRetry(async () => {
       const ai = this.getAI();
       const parts: any[] = [{ text: prompt }];
-      
+
       referenceImages.forEach(img => {
         parts.push({
           inlineData: {
@@ -125,7 +151,7 @@ export class GeminiService {
           }
         });
       });
-      
+
       const response = await ai.models.generateContent({
         model: 'gemini-3-pro-image-preview',
         contents: { parts },
@@ -136,7 +162,7 @@ export class GeminiService {
           }
         }
       });
-      
+
       const candidates = response.candidates;
       if (candidates && candidates.length > 0) {
         for (const part of candidates[0].content.parts) {
