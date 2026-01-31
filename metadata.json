@@ -1,0 +1,5 @@
+{
+  "name": "ScriptVisualizer AI",
+  "description": "A professional storyboard generator that transforms video scripts into visual scenes using Gemini 3 Pro Image.",
+  "requestFramePermissions": []
+}
