@@ -71,31 +71,24 @@ export class GeminiService {
       const ai = this.getAI();
       const systemInstruction = `Atue como um especialista em criação de mascotes animados para IA de imagem. Sua tarefa é criar exatamente ${sceneCount} prompts visuais para cenas de um roteiro.
 
-Whenever generating images, always feature an adorably cute animated mascot character as the main subject of the composition.
+CRITICAL INSTRUCTION: The characters in the images MUST BE anthropomorphic personifications of the specific objects, food, animals, or concepts mentioned in the script.
+- DO NOT generate a generic human or animal mascot standing next to the object.
+- The object ITSELF must be the character (e.g., if the script is about a coffee cup, the character is a cute 3D coffee cup with eyes, mouth, and limbs).
 
-The character must be rendered in high-quality 3D Pixar-inspired style, with extra-rounded, soft proportions, smooth pastel-friendly materials, subtle subsurface scattering, and gentle cinematic lighting that enhances warmth and cuteness.
+Style Guidelines (Pixar-Inspired 3D):
+- Render the anthropomorphic object in high-quality 3D cute style (like Pixar/Disney objects come to life).
+- Materials: smooth, glossy, tactile, and pastel-friendly.
+- Lighting: warm, cinematic, soft lighting with subsurface scattering.
 
-The character should follow “baby-schema” proportions:
-• Very large, round, glossy eyes (slightly oversized relative to the face)
-• Soft, rounded cheeks (optionally with a light blush)
-• Small nose, simplified facial features
-• A clearly defined but cute, expressive mouth capable of sweet smiles, curious “ooh” expressions, excited grins, or playful surprise.
+Character Design ("Baby-Schema" applied to Objects):
+- Give the object large, round, glossy eyes (centered on the "face" of the object).
+- Add a small, cute mouth capable of expressive smiles or shapes.
+- If applicable, give the object small, rounded arms/legs to allow for gesturing (waving, pointing, holding things).
+- Expressions must be highly emotive (happy, sad, curious, excited) directly on the object's face.
 
-Eye expressions must be highly emotive and charming, with visible highlights, soft reflections, and subtle eyelid shapes that enhance innocence, friendliness, and approachability.
-
-Facial expressions, body posture, and gestures must feel lively, playful, and emotionally readable, automatically inferred from the prompt’s intent (friendly, curious, excited, proud, thoughtful, etc.).
-
-When the character has arms, hands must always be visible, small and rounded, posed in cute, communicative gestures such as waving, pointing, presenting, holding props, reacting, or excitedly explaining.
-
-The character should maintain a warm, lovable, and reassuring presence, like a friendly explainer mascot or animated guide designed to instantly win affection and trust.
-
-The background must be generated dynamically to match the prompt’s context (office, classroom, technology, space, nature, etc.), but remain soft, slightly simplified, and visually supportive, never overpowering the character.
-
-Use a harmonious color palette with gentle contrasts, soft gradients, and shallow depth of field to keep the mascot as the clear focal point.
-
-When appropriate, include cute, stylized props or icons (screens, charts, symbols, tools) integrated naturally into the 3D scene, scaled and styled to match the character’s adorable proportions.
-
-The final image must prioritize cuteness, clarity, warmth, and instant emotional connection, delivering charming, high-quality Pixar-style 3D explainer imagery that feels joyful, friendly, and irresistibly adorable.`;
+Context:
+- The background should be a simplified, stylized environment relevant to where that object would exist (e.g., kitchen for a toaster, desk for a pencil), but kept soft and blurry to keep focus on the character.
+- The final result should look like a premium 3D animated movie frame where everyday objects are living, cute characters.`;
       const parts: any[] = [{ text: script }];
 
       referenceImages.forEach(img => {
