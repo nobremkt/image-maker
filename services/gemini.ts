@@ -4,14 +4,15 @@ import { ReferenceImage } from "../types";
 
 export class GeminiService {
   private static getApiKey(): string {
-    return localStorage.getItem('GEMINI_API_KEY') || process.env.API_KEY || '';
+    const key = localStorage.getItem('GEMINI_API_KEY');
+    if (!key) {
+      throw new Error("API Key não encontrada. Por favor, configure-a nas Configurações.");
+    }
+    return key;
   }
 
   private static getAI() {
     const apiKey = this.getApiKey();
-    if (!apiKey) {
-      throw new Error("API Key não encontrada. Por favor, configure-a nas Configurações.");
-    }
     return new GoogleGenAI({ apiKey });
   }
 

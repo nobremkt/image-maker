@@ -60,49 +60,50 @@ const App: React.FC = () => {
   };
 
   const handleUpdateDialogue = (id: string, text: string) => {
-    setVideoQueue(prev => prev.map(item => 
+    setVideoQueue(prev => prev.map(item =>
       item.id === id ? { ...item, dialogue: text } : item
     ));
   };
 
   const handleGenerateAllVideos = async () => {
     if (isProcessingVideos || videoQueue.length === 0) return;
-    if (!localStorage.getItem('GEMINI_API_KEY') && !process.env.API_KEY) {
+    if (isProcessingVideos || videoQueue.length === 0) return;
+    if (!localStorage.getItem('GEMINI_API_KEY')) {
       alert("Por favor, configure sua API Key nas Configurações antes de gerar vídeos.");
       setRoute(AppRoute.SETTINGS);
       return;
     }
 
     setIsProcessingVideos(true);
-    
+
     for (let i = 0; i < videoQueue.length; i++) {
       const current = videoQueue[i];
       if (current.status === 'completed') continue;
 
-      setVideoQueue(prev => prev.map(item => 
+      setVideoQueue(prev => prev.map(item =>
         item.id === current.id ? { ...item, status: 'generating', progress: 20 } : item
       ));
 
       try {
         const videoUrl = await GeminiService.generateVideo(
-          current.imageData, 
-          current.mimeType, 
-          videoModel, 
+          current.imageData,
+          current.mimeType,
+          videoModel,
           videoAspectRatio,
           current.dialogue
         );
 
-        setVideoQueue(prev => prev.map(item => 
-          item.id === current.id ? { 
-            ...item, 
-            videoUrl, 
-            status: 'completed', 
-            progress: 100 
+        setVideoQueue(prev => prev.map(item =>
+          item.id === current.id ? {
+            ...item,
+            videoUrl,
+            status: 'completed',
+            progress: 100
           } : item
         ));
       } catch (error: any) {
         console.error("Erro no vídeo:", error);
-        setVideoQueue(prev => prev.map(item => 
+        setVideoQueue(prev => prev.map(item =>
           item.id === current.id ? { ...item, status: 'error', progress: 0 } : item
         ));
       }
@@ -124,20 +125,20 @@ const App: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-6">
-            <div 
+            <div
               onClick={() => videoInputRef.current?.click()}
               className="border-2 border-dashed border-zinc-800 rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all text-center"
             >
               <svg className="w-12 h-12 text-zinc-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
               <span className="text-zinc-300 font-medium">Clique para subir imagens</span>
               <span className="text-zinc-500 text-xs mt-1">PNG, JPG suportados</span>
-              <input 
-                type="file" 
-                ref={videoInputRef} 
-                multiple 
-                className="hidden" 
-                accept="image/*" 
-                onChange={handleVideoUpload} 
+              <input
+                type="file"
+                ref={videoInputRef}
+                multiple
+                className="hidden"
+                accept="image/*"
+                onChange={handleVideoUpload}
               />
             </div>
 
@@ -170,11 +171,10 @@ const App: React.FC = () => {
             <button
               onClick={handleGenerateAllVideos}
               disabled={isProcessingVideos || videoQueue.length === 0}
-              className={`w-full py-4 rounded-xl font-bold transition-all shadow-lg ${
-                isProcessingVideos || videoQueue.length === 0
+              className={`w-full py-4 rounded-xl font-bold transition-all shadow-lg ${isProcessingVideos || videoQueue.length === 0
                   ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
                   : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/20'
-              }`}
+                }`}
             >
               {isProcessingVideos ? 'Processando Fila...' : `Gerar ${videoQueue.length} Vídeos`}
             </button>
@@ -186,18 +186,18 @@ const App: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {videoQueue.map((item) => (
                 <div key={item.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden relative group flex flex-col">
-                   <div className={`aspect-video bg-zinc-950 relative`}>
+                  <div className={`aspect-video bg-zinc-950 relative`}>
                     {item.status === 'completed' && item.videoUrl ? (
-                      <video 
-                        src={item.videoUrl} 
-                        controls 
+                      <video
+                        src={item.videoUrl}
+                        controls
                         className="w-full h-full object-cover"
                         poster={item.imageData}
                       />
                     ) : (
                       <img src={item.imageData} className="w-full h-full object-cover opacity-50 blur-sm" />
                     )}
-                    
+
                     {item.status !== 'completed' && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-black/40">
                         {item.status === 'generating' ? (
@@ -216,14 +216,14 @@ const App: React.FC = () => {
                       </div>
                     )}
 
-                    <button 
+                    <button
                       onClick={() => removeFromQueue(item.id)}
                       className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all z-20"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                   </div>
-                  
+
                   <div className="p-4 space-y-3 bg-zinc-900/50 flex-1">
                     <div>
                       <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1 tracking-widest">Fala do Personagem / Instrução</label>
@@ -278,7 +278,8 @@ const App: React.FC = () => {
 
   const handleGenerateExplainer = async () => {
     if (!explainerScript.trim()) return;
-    if (!localStorage.getItem('GEMINI_API_KEY') && !process.env.API_KEY) {
+    if (!explainerScript.trim()) return;
+    if (!localStorage.getItem('GEMINI_API_KEY')) {
       alert("Por favor, configure sua API Key nas Configurações antes de gerar mascotes.");
       setRoute(AppRoute.SETTINGS);
       return;
@@ -290,11 +291,11 @@ const App: React.FC = () => {
 
     try {
       const sceneData = await GeminiService.generateMascotPrompts(
-        explainerScript, 
-        explainerSceneCount, 
+        explainerScript,
+        explainerSceneCount,
         explainerReferenceImages
       );
-      
+
       const initialScenes: Scene[] = sceneData.map((d) => ({
         id: Math.random().toString(36).substr(2, 9),
         description: d.description,
@@ -307,15 +308,15 @@ const App: React.FC = () => {
       for (let i = 0; i < initialScenes.length; i++) {
         try {
           const imageUrl = await GeminiService.generateSceneImage(
-            initialScenes[i].imagePrompt, 
+            initialScenes[i].imagePrompt,
             explainerAspectRatio,
             explainerReferenceImages
           );
-          setExplainerScenes(prev => prev.map((s, idx) => 
+          setExplainerScenes(prev => prev.map((s, idx) =>
             idx === i ? { ...s, imageUrl, status: 'completed' as const } : s
           ));
         } catch (error: any) {
-          setExplainerScenes(prev => prev.map((s, idx) => 
+          setExplainerScenes(prev => prev.map((s, idx) =>
             idx === i ? { ...s, status: 'error' as const } : s
           ));
         }
@@ -361,25 +362,25 @@ const App: React.FC = () => {
                 </select>
               </div>
             </div>
-            
+
             <textarea
               value={explainerScript}
               onChange={(e) => setExplainerScript(e.target.value)}
               placeholder="Descreva seu personagem..."
               className="w-full h-64 bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            
-             <div className="flex flex-wrap gap-2 mb-2">
-                {explainerReferenceImages.map((img, idx) => (
-                  <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-zinc-700">
-                    <img src={img.data} className="w-full h-full object-cover" />
-                    <button onClick={() => removeReferenceImage(idx)} className="absolute top-0 right-0 bg-red-500 text-white rounded-bl-lg p-0.5"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-                  </div>
-                ))}
-                <button onClick={() => fileInputRef.current?.click()} className="w-16 h-16 rounded-lg border-2 border-dashed border-zinc-700 flex items-center justify-center text-zinc-500 hover:border-zinc-500">+</button>
-                <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileUpload} />
-             </div>
-             
+
+            <div className="flex flex-wrap gap-2 mb-2">
+              {explainerReferenceImages.map((img, idx) => (
+                <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-zinc-700">
+                  <img src={img.data} className="w-full h-full object-cover" />
+                  <button onClick={() => removeReferenceImage(idx)} className="absolute top-0 right-0 bg-red-500 text-white rounded-bl-lg p-0.5"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                </div>
+              ))}
+              <button onClick={() => fileInputRef.current?.click()} className="w-16 h-16 rounded-lg border-2 border-dashed border-zinc-700 flex items-center justify-center text-zinc-500 hover:border-zinc-500">+</button>
+              <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileUpload} />
+            </div>
+
             <button
               onClick={handleGenerateExplainer}
               disabled={isExplainerProcessing || !explainerScript.trim()}
@@ -391,9 +392,9 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="lg:col-span-2">
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {explainerScenes.map((scene, idx) => <SceneCard key={scene.id} scene={scene} index={idx} />)}
-           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {explainerScenes.map((scene, idx) => <SceneCard key={scene.id} scene={scene} index={idx} />)}
+          </div>
         </div>
       </div>
     </div>
